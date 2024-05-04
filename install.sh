@@ -57,6 +57,19 @@ elif [ "${KERNEL_FLAVOR}" = "surface" ]; then
         --install iptsd \
         --install libwacom-surface \
         --install libwacom-surface-data
+elif [ "${KERNEL_FLAVOR}" = "t2" ]; then
+    echo "install.sh: steps for KERNEL_FLAVOR: ${KERNEL_FLAVOR}"
+    # Install t2 kernel
+    wget https://copr.fedorainfracloud.org/coprs/sharpenedblade/t2linux/repo/fedora-${RELEASE}/sharpenedblade-t2linux-fedora-${RELEASE}.repo -P /etc/yum.repos.d
+    rpm-ostree cliwrap install-to-root /
+    rpm-ostree override replace \
+        --experimental \
+        --from repo=copr:copr.fedorainfracloud.org:sharpenedblade:t2linux \
+        kernel \
+        kernel-core \
+        kernel-modules \
+        kernel-modules-core \
+        kernel-modules-extra
 else
     echo "install.sh: steps for unexpected KERNEL_FLAVOR: ${KERNEL_FLAVOR}"
 fi
@@ -86,6 +99,12 @@ elif [ "${KERNEL_FLAVOR}" = "surface" ]; then
     fi
     systemctl enable fprintd
     systemctl enable surface-hardware-setup
+elif [ "${KERNEL_FLAVOR}" = "t2" ]; then
+    echo "install.sh: post-install for: ${KERNEL_FLAVOR}"
+    if grep -q "silverblue" <<< "${IMAGE_NAME}"; then
+      systemctl enable dconf-update
+    fi
+    systemctl enable t2fanrd
 else
     echo "install.sh: post-install for unexpected KERNEL_FLAVOR: ${KERNEL_FLAVOR}"
 fi

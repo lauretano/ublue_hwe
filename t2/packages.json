@@ -1,0 +1,13 @@
+{
+    "all": {
+        "include": {
+            "all": [
+                "rust-tiny-dfr",
+                "t2fanrd"
+            ]
+        },
+        "exclude": {
+            "all": []
+        }
+    }
+}
